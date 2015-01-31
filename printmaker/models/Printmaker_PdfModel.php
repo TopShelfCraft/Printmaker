@@ -56,7 +56,7 @@ class Printmaker_PdfModel extends BaseModel
 
 		if (isset($this->_settings['cachePath']))
 		{
-			$this->_cachePath = $this->_settings['cachePath'];
+			$this->_cachePath = trim($this->_settings['cachePath'], '/') . '/';
 		}
 		else
 		{
@@ -65,7 +65,7 @@ class Printmaker_PdfModel extends BaseModel
 
 		if (isset($this->_settings['cacheUrl']))
 		{
-			$this->_cachePath = $this->_settings['cacheUrl'];
+			$this->_cachePath = trim($this->_settings['cacheUrl'], '/') . '/';
 		}
 		else
 		{
