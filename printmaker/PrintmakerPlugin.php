@@ -14,7 +14,7 @@ class PrintmakerPlugin extends BasePlugin
 
 	public function getVersion()
 	{
-		return '0.9.1';
+		return '0.9.2';
 	}
 
 	public function getDeveloper()

@@ -41,7 +41,7 @@ class PrintmakerVariable
 	 * @param mixed $vars
 	 * @param array $settings
 	 */
-	function pdfFromTemplate($template = null, $vars = null, $settings = array())
+	function pdfFromTemplate($template = null, $vars = array(), $settings = array())
 	{
 		return craft()->printmaker_pdf->pdfFromTemplate($template, $vars, $settings);
 	}
