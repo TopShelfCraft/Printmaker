@@ -2,7 +2,14 @@
 namespace Craft;
 
 /**
- * Printmaker PdfModel
+ * Printmaker_PdfModel
+ *
+ * @author    Top Shelf Craft <michael@michaelrog.com>
+ * @copyright Copyright (c) 2016, Michael Rog
+ * @license   http://topshelfcraft.com/license
+ * @see       http://topshelfcraft.com
+ * @package   craft.plugins.printmaker
+ * @since     1.0
  */
 class Printmaker_PdfModel extends BaseModel
 {
@@ -14,6 +21,7 @@ class Printmaker_PdfModel extends BaseModel
 	private $_cacheUrl;
 
 	private $_settings = array();
+	private $_devMode = false;
 
 	private $_default_settings = array(
 		'compress'		=> false,
@@ -49,6 +57,10 @@ class Printmaker_PdfModel extends BaseModel
 		{
 			$this->_settings = $this->_default_settings;
 		}
+
+		// See if we're in devMode...
+
+		$this->_devMode = craft()->config->get('devMode');
 
 		// Set paths if they're not defined already
 
@@ -152,8 +164,14 @@ class Printmaker_PdfModel extends BaseModel
 			return $dompdf;
 
 		} catch (Exception $e) {
-			// TODO: Throw exception if devMode is on, otherwise return false
-			throw new Exception($e->getMessage());
+			if ($this->_devMode)
+			{
+				throw new Exception($e->getMessage());
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 	}
@@ -182,12 +200,18 @@ class Printmaker_PdfModel extends BaseModel
 		}
 		catch (Exception $e)
 		{
-			// TODO: Throw exception if devMode is on, otherwise return false
-			throw new Exception($e->getMessage());
-			// return false;
+			if ($this->_devMode)
+			{
+				throw new Exception($e->getMessage());
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 	}
+
 
 	/**
 	 * Streams the generated PDF to the browser as an attachment for download
@@ -211,12 +235,18 @@ class Printmaker_PdfModel extends BaseModel
 		}
 		catch (Exception $e)
 		{
-			// TODO: Throw exception if devMode is on, otherwise return false
-			throw new Exception($e->getMessage());
-			// return false;
+			if ($this->_devMode)
+			{
+				throw new Exception($e->getMessage());
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 	}
+
 
 	/**
 	 * Saves the generated PDF to the cache directory and returns the new file's URL
@@ -238,10 +268,88 @@ class Printmaker_PdfModel extends BaseModel
 		}
 		catch (Exception $e)
 		{
-			// TODO: Throw exception if devMode is on, otherwise return false
-			throw new Exception($e->getMessage());
-			// return false;
+			if ($this->_devMode)
+			{
+				throw new Exception($e->getMessage());
+			}
+			else
+			{
+				return false;
+			}
 		}
+
+	}
+
+
+	/**
+	 * Saves the generated PDF to the cache directory and returns the new file's URL
+	 *
+	 * @throws Exception
+	 * @returns void|false
+	 */
+	public function email($filename = false, $attributes = array(), $variables = array())
+	{
+
+		// Generate the PDF, and get its URL/path
+
+		IOHelper::ensureFolderExists($this->_cachePath);
+		$filePath = $this->_cachePath . $this->_settings['filename'];
+		$fileUrl = $this->_cacheUrl . $this->_settings['filename'];
+
+		try {
+			IOHelper::writeToFile($filePath, $this->_dompdf->output());
+		}
+		catch (Exception $e)
+		{
+			if ($this->_devMode)
+			{
+				throw new Exception($e->getMessage());
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		// Set up email
+
+		$email = new EmailModel();
+
+		if (is_array($attributes))
+		{
+			$email->setAttributes($attributes);
+		}
+
+		if (empty($email->toEmail))
+		{
+			$settings = craft()->email->getSettings();
+			$email->toEmail = !empty($settings['emailAddress']) ? $settings['emailAddress'] : '';
+		}
+		if (empty($email->subject))
+		{
+			$email->subject = "";
+		}
+		if (empty($email->body))
+		{
+			$email->body = "";
+		}
+
+		if (!is_string($filename) || empty($filename))
+		{
+			$filename = $this->_settings['filename'];
+		}
+
+		$email->addAttachment($filePath, $filename, 'base64', 'application/pdf');
+
+		// Render and send email
+
+		if (!is_array($variables))
+		{
+			$variables = array();
+		}
+		$variables['pdfUrl'] = $fileUrl;
+
+		return craft()->email->sendEmail($email, $variables);
 
 	}
 

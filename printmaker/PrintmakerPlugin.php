@@ -2,44 +2,147 @@
 namespace Craft;
 
 /**
- * Printmaker Plugin class
+ * PrintmakerPlugin
+ *
+ * @author    Top Shelf Craft <michael@michaelrog.com>
+ * @copyright Copyright (c) 2016, Michael Rog
+ * @license   http://topshelfcraft.com/license
+ * @see       http://topshelfcraft.com
+ * @package   craft.plugins.printmaker
+ * @since     1.0
  */
 class PrintmakerPlugin extends BasePlugin
 {
 
+	/**
+	 * @return string
+	 */
 	public function getName()
 	{
 		return 'Printmaker';
 	}
 
-	public function getVersion()
+	/**
+	 * Return the plugin description
+	 *
+	 * @return string
+	 */
+	public function getDescription()
 	{
-		return '0.9.2';
+		return 'PDF rendering made easy.';
 	}
 
+	/**
+	 * Return the plugin developer's name
+	 *
+	 * @return string
+	 */
 	public function getDeveloper()
 	{
-		return 'Michael Rog';
+		return 'Top Shelf Craft';
 	}
 
+	/**
+	 * Return the plugin developer's URL
+	 *
+	 * @return string
+	 */
 	public function getDeveloperUrl()
 	{
-		return 'http://michaelrog.com/craft/printmaker';
+		return 'http://topshelfcraft.com';
 	}
 
+	/**
+	 * Return the plugin's Documentation URL
+	 *
+	 * @return string
+	 */
+	public function getDocumentationUrl()
+	{
+		return 'http://topshelfcraft.com/printmaker';
+	}
+
+	/**
+	 * Return the plugin's current version
+	 *
+	 * @return string
+	 */
+	public function getVersion()
+	{
+		return '0.10.0';
+	}
+
+	/**
+	 * Return the plugin's db schema version
+	 *
+	 * @return string|null
+	 */
+	public function getSchemaVersion()
+	{
+		return '0.0.0.0';
+	}
+
+	/**
+	 * Return the plugin's db schema version
+	 *
+	 * @return string
+	 */
+	public function getReleaseFeedUrl()
+	{
+		return 'https://topshelfcraft.com/releases/printmaker.json';
+	}
+
+	/**
+	 * Return whether the plugin has a CP section
+	 *
+	 * @return bool
+	 */
 	public function hasCpSection()
 	{
 		return false;
 	}
 
-	public function registerCpRoutes()
+	/**
+	 * Make sure requirements are met before installation.
+	 *
+	 * @return bool
+	 * @throws Exception
+	 */
+	public function onBeforeInstall()
 	{
-		return array();
+		// Prevent the install if we aren't at least on PHP 5.4
+		if (!defined('PHP_VERSION') || version_compare(PHP_VERSION, '5.4', '<')) {
+			Craft::log('Printmaker requires PHP 5.4+', LogLevel::Error);
+			return false;
+		}
 	}
 
 	public function onAfterInstall()
 	{
 		craft()->printmaker_beta->phoneHome();
+	}
+
+	/**
+	 * @param mixed $msg
+	 * @param string $level
+	 * @param bool $force
+	 *
+	 * @return null
+	 */
+	public static function log($msg, $level = LogLevel::Profile, $force = false)
+	{
+
+		if (is_string($msg))
+		{
+			$msg = "\n" . $msg . "\n\n";
+		}
+		else
+		{
+			$msg = "\n" . print_r($msg, true) . "\n\n";
+		}
+
+		parent::log($msg, $level, $force);
+
 	}
 
 }

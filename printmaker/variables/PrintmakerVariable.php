@@ -1,12 +1,22 @@
 <?php
 namespace Craft;
 
-// TODO: Add proper file header
+/**
+ * PrintmakerVariable
+ *
+ * @author    Top Shelf Craft <michael@michaelrog.com>
+ * @copyright Copyright (c) 2016, Michael Rog
+ * @license   http://topshelfcraft.com/license
+ * @see       http://topshelfcraft.com
+ * @package   craft.plugins.printmaker
+ * @since     1.0
+ */
 class PrintmakerVariable
 {
 
 	/**
-	 * TODO: docs
+	 * Template-accessible method to generate a PDF from HTML and return its PdfModel
+	 *
 	 * @param string $html
 	 * @param array $settings
 	 */
@@ -16,7 +26,8 @@ class PrintmakerVariable
 	}
 
 	/**
-	 * TODO: docs
+	 * Template method to generate a PDF using HTML from a remote URL and return its PdfModel
+	 *
 	 * @param string $url
 	 * @param array $settings
 	 */
@@ -26,7 +37,8 @@ class PrintmakerVariable
 	}
 
 	/**
-	 * TODO: docs
+	 * Template method to generate a PDF using HTML from a local file and return its PdfModel
+	 *
 	 * @param string $path
 	 * @param array $settings
 	 */
@@ -36,7 +48,8 @@ class PrintmakerVariable
 	}
 
 	/**
-	 * TODO: docs
+	 * Template method to generate a PDF using a Craft template and return its PdfModel
+	 *
 	 * @param string $template
 	 * @param mixed $vars
 	 * @param array $settings

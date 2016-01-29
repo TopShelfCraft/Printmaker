@@ -12,7 +12,14 @@ require_once CRAFT_PLUGINS_PATH . 'printmaker/vendor/dompdf/dompdf_config.inc.ph
 
 
 /**
- * Printmaker PdfService
+ * Printmaker_PdfService
+ *
+ * @author    Top Shelf Craft <michael@michaelrog.com>
+ * @copyright Copyright (c) 2016, Michael Rog
+ * @license   http://topshelfcraft.com/license
+ * @see       http://topshelfcraft.com
+ * @package   craft.plugins.printmaker
+ * @since     1.0
  */
 class Printmaker_PdfService extends BaseApplicationComponent
 {
