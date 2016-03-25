@@ -69,7 +69,7 @@ class PrintmakerPlugin extends BasePlugin
 	 */
 	public function getVersion()
 	{
-		return '0.10.0';
+		return '1.0.0';
 	}
 
 	/**
@@ -117,6 +117,11 @@ class PrintmakerPlugin extends BasePlugin
 		}
 	}
 
+	/**
+	 * @inheritDoc IPlugin::onAfterInstall()
+	 *
+	 * @return void
+	 */
 	public function onAfterInstall()
 	{
 		craft()->printmaker_beta->phoneHome();

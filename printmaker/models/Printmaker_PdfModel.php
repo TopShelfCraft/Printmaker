@@ -2,6 +2,16 @@
 namespace Craft;
 
 /**
+ * ==============================================
+ * DOMPDF library, etc.
+ * @see http://dompdf.github.io/
+ */
+require_once CRAFT_PLUGINS_PATH . 'printmaker/vendor/autoload.php';
+
+use Dompdf\Dompdf;
+
+
+/**
  * Printmaker_PdfModel
  *
  * @author    Top Shelf Craft <michael@michaelrog.com>
@@ -27,7 +37,7 @@ class Printmaker_PdfModel extends BaseModel
 		'compress'		=> false,
 		'orientation' 	=> 'portrait', // portrait, landscape
 		'size'			=> 'letter', // letter, legal, a5
-		'filename'		=> 'Printmaker.pdf',
+		'filename'		=> 'Printmaker',
 		'cacheDirectory' => 'Printmaker/',
 		'encrypt'		=> false,
 		'userPass'		=> '',
@@ -136,9 +146,9 @@ class Printmaker_PdfModel extends BaseModel
 
 		try {
 
-			$dompdf = new \DOMPDF();
-			$dompdf->load_html($html);
-			$dompdf->set_paper($settings['size'], $settings['orientation']);
+			$dompdf = new Dompdf();
+			$dompdf->loadHtml($html);
+			$dompdf->setPaper($settings['size'], $settings['orientation']);
 			$dompdf->render();
 
 			if($settings['encrypt']) {
@@ -157,7 +167,7 @@ class Printmaker_PdfModel extends BaseModel
 				if($settings['canAdd'])
 					$permissions[] = 'add';
 
-				$dompdf->get_canvas()->get_cpdf()->setEncryption($settings['userPass'], $settings['ownerPass'], $permissions);
+				$dompdf->getCanvas()->get_cpdf()->setEncryption($settings['userPass'], $settings['ownerPass'], $permissions);
 
 			}
 

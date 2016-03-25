@@ -3,15 +3,6 @@ namespace Craft;
 
 
 /**
- * ==============================================
- * dompdf library
- * @see http://dompdf.github.io/
- *
- */
-require_once CRAFT_PLUGINS_PATH . 'printmaker/vendor/dompdf/dompdf_config.inc.php';
-
-
-/**
  * Printmaker_PdfService
  *
  * @author    Top Shelf Craft <michael@michaelrog.com>
