@@ -114,10 +114,12 @@ class PrintmakerPlugin extends BasePlugin
 		// Prevent the install if we aren't at least on Craft 2.5
 
 		if (version_compare(craft()->getVersion(), '2.5', '<')) {
-			// No way to gracefully handle this
-			// (because until 2.5, plugins can't prevent themselves from being installed),
-			// so throw an Exception.
-			throw new Exception('Craft Calendars requires Craft 2.5+');
+			/*
+			 * No way to gracefully handle this
+			 * (because until 2.5, plugins can't prevent themselves from being installed),
+			 * so throw an Exception.
+			 */
+			throw new Exception('Printmaker requires Craft 2.5+');
 		}
 
 		// Prevent the install if we aren't at least on PHP 5.4
