@@ -2,7 +2,8 @@
 
   "config":
   {
-    "vendor-dir": "printmaker/vendor"
+    "vendor-dir": "printmaker/vendor",
+    "preferred-install": "dist"
   },
 
   "require":

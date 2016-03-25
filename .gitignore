@@ -5,6 +5,11 @@
 personal/
 deprecated/
 
+# --- Exclude git repos in the vendor directory, to prevent subprojects from being excluded
+
+printmaker/vendor/.git
+printmaker/vendor/**/.git
+
 # --- Exclude workflow cruft
 
 /.idea/*
