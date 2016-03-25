@@ -1,5 +1,5 @@
 Printmaker
-a plugin for Craft
+a plugin for CraftCMS
 by Michael Rog
 
-http://michaelrog.com/craft/printmaker
+http://topshelfcraft.com/printmaker
