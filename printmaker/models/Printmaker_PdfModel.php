@@ -27,26 +27,72 @@ class Printmaker_PdfModel extends BaseModel
 	// ----------- PROPERTIES -----------
 
 	private $_dompdf;
+
+	private $_configurableSettings = array(
+
+		// Printmaker settings
+
+		'size',
+		'orientation',
+
+		'defaultOrientation',
+		'compress',
+		'filename',
+		'extension',
+		'cachePath',
+		'cacheUrl',
+		'cacheDirectory',
+		'encrypt',
+		'userPass',
+		'ownerPass',
+		'canPrint',
+		'canModify',
+		'canCopy',
+		'canAdd',
+		'devMode',
+
+		// DOMPDF system settings
+
+		'tempDir',
+		'fontDir',
+		'fontCache',
+		'logOutputFile',
+
+		// DOMPDF rendering defaults
+
+		'defaultMediaType',
+		'defaultPaperSize',
+		'defaultFont',
+		'dpi',
+		'fontHeightRatio',
+
+		// DOMPDF parsing defaults
+
+		'isPhpEnabled',
+		'isRemoteEnabled',
+		'isJavascriptEnabled',
+		'isHtml5ParserEnabled',
+		'isFontSubsettingEnabled',
+
+		// DOMPDF debugging defaults
+
+		'debugPng',
+		'debugKeepTemp',
+		'debugCss',
+		'debugLayout',
+		'debugLayoutLines',
+		'debugLayoutBlocks',
+		'debugLayoutInline',
+		'debugLayoutPaddingBox',
+
+	);
+
+	private $_defaultSettings = array();
+	private $_settings = array();
+
+	private $_devMode = false;
 	private $_cachePath;
 	private $_cacheUrl;
-
-	private $_settings = array();
-	private $_devMode = false;
-
-	private $_default_settings = array(
-		'compress'		=> false,
-		'orientation' 	=> 'portrait', // portrait, landscape
-		'size'			=> 'letter', // letter, legal, a5
-		'filename'		=> 'Printmaker',
-		'cacheDirectory' => 'Printmaker/',
-		'encrypt'		=> false,
-		'userPass'		=> '',
-		'ownerPass'		=> '',
-		'canPrint'		=> true,
-		'canModify'     => true,
-		'canCopy'		=> true,
-		'canAdd'		=> true,
-	);
 
 
 	// ----------- CRAFT DEFAULT MODEL METHODS -----------
@@ -57,22 +103,33 @@ class Printmaker_PdfModel extends BaseModel
 
 		parent::__construct();
 
-		// Whip up the settings array
+		// Assemble default settings from config
+
+		foreach ( $this->_configurableSettings as $k)
+		{
+			$v = craft()->config->get($k, 'printmaker');
+			if (isset($v))
+			{
+				$this->_defaultSettings[$k] = $v;
+			}
+		}
+
+		// Assemble instance settings from defaults, merging in any overrides
 
 		if (is_array($settings))
 		{
-			$this->_settings = array_merge($this->_default_settings, $settings);
+			$this->_settings = array_merge($this->_defaultSettings, $settings);
 		}
 		else
 		{
-			$this->_settings = $this->_default_settings;
+			$this->_settings = $this->_defaultSettings;
 		}
 
 		// See if we're in devMode...
 
-		$this->_devMode = craft()->config->get('devMode');
+		$this->_devMode = craft()->config->get('devMode') || (!empty($this->_settings['devMode']));
 
-		// Set paths if they're not defined already
+		// Set up the full cachePath and cacheUrl if they're not defined already (i.e. if only the cacheDirectory is defined)
 
 		$cacheDirectory = trim($this->_settings['cacheDirectory'], '/') . '/';
 
@@ -87,7 +144,7 @@ class Printmaker_PdfModel extends BaseModel
 
 		if (isset($this->_settings['cacheUrl']))
 		{
-			$this->_cachePath = trim($this->_settings['cacheUrl'], '/') . '/';
+			$this->_cacheUrl = trim($this->_settings['cacheUrl'], '/') . '/';
 		}
 		else
 		{
@@ -146,9 +203,13 @@ class Printmaker_PdfModel extends BaseModel
 
 		try {
 
-			$dompdf = new Dompdf();
+			$dompdf = new Dompdf($settings);
 			$dompdf->loadHtml($html);
-			$dompdf->setPaper($settings['size'], $settings['orientation']);
+
+			$size = !empty($settings['size']) ? $settings['size'] : $settings['defaultPaperSize'];
+			$orientation = !empty($settings['orientation']) ? $settings['orientation'] : $settings['defaultOrientation'];
+			$dompdf->setPaper($size, $orientation);
+
 			$dompdf->render();
 
 			if($settings['encrypt']) {
@@ -268,9 +329,9 @@ class Printmaker_PdfModel extends BaseModel
 	{
 
 		IOHelper::ensureFolderExists($this->_cachePath);
-		$filePath = $this->_cachePath . $this->_settings['filename'];
-		$fileUrl = $this->_cacheUrl . $this->_settings['filename'];
-
+		$fileExtension = '.' . $this->_settings['extension'];
+		$filePath = $this->_cachePath . $this->_settings['filename'] . $fileExtension;
+		$fileUrl = $this->_cacheUrl . $this->_settings['filename'] . $fileExtension;
 
 		try {
 			IOHelper::writeToFile($filePath, $this->_dompdf->output());
@@ -294,17 +355,22 @@ class Printmaker_PdfModel extends BaseModel
 	/**
 	 * Saves the generated PDF to the cache directory and returns the new file's URL
 	 *
+	 * @param $filename string Overrides the name of the file as it is attached to the email
+	 * @param $attributes array Attributes to set on the EmailModel
+	 * @param $variables array The variables that will be available to to the email template (in addition to `fileUrl`)
+	 *
 	 * @throws Exception
 	 * @returns void|false
 	 */
-	public function email($filename = false, $attributes = array(), $variables = array())
+	public function email($filename = '', $attributes = array(), $variables = array())
 	{
 
 		// Generate the PDF, and get its URL/path
 
 		IOHelper::ensureFolderExists($this->_cachePath);
-		$filePath = $this->_cachePath . $this->_settings['filename'];
-		$fileUrl = $this->_cacheUrl . $this->_settings['filename'];
+		$fileExtension = '.' . $this->_settings['extension'];
+		$filePath = $this->_cachePath . $this->_settings['filename'] . $fileExtension;
+		$fileUrl = $this->_cacheUrl . $this->_settings['filename'] . $fileExtension;
 
 		try {
 			IOHelper::writeToFile($filePath, $this->_dompdf->output());
