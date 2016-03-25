@@ -104,7 +104,7 @@
                 "dev-develop": "0.7-dev"
             }
         },
-        "installation-source": "source",
+        "installation-source": "dist",
         "autoload": {
             "psr-4": {
                 "Dompdf\\": "src/"
