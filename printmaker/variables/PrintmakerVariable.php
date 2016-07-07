@@ -4,7 +4,7 @@ namespace Craft;
 /**
  * PrintmakerVariable
  *
- * @author    Top Shelf Craft <michael@michaelrog.com>
+ * @author    Top Shelf Craft <support@topshelfcraft.com>
  * @copyright Copyright (c) 2016, Michael Rog
  * @license   http://topshelfcraft.com/license
  * @see       http://topshelfcraft.com
@@ -57,15 +57,6 @@ class PrintmakerVariable
 	function pdfFromTemplate($template = null, $vars = array(), $settings = array())
 	{
 		return craft()->printmaker_pdf->pdfFromTemplate($template, $vars, $settings);
-	}
-
-	/**
-	 * TODO: upgrade to Updater service
-	 * @deprecated For internal/Beta purposes only
-	 */
-	function phoneHome()
-	{
-		return craft()->printmaker_beta->phoneHome();
 	}
 
 }

@@ -4,7 +4,7 @@ namespace Craft;
 /**
  * PrintmakerPlugin
  *
- * @author    Top Shelf Craft <michael@michaelrog.com>
+ * @author    Top Shelf Craft <support@topshelfcraft.com>
  * @copyright Copyright (c) 2016, Michael Rog
  * @license   http://topshelfcraft.com/license
  * @see       http://topshelfcraft.com
@@ -89,7 +89,7 @@ class PrintmakerPlugin extends BasePlugin
 	 */
 	public function getReleaseFeedUrl()
 	{
-		return 'https://topshelfcraft.com/releases/printmaker.json';
+		return Printmaker_UpdatesService::ReleaseFeedUrl;
 	}
 
 	/**
@@ -142,7 +142,7 @@ class PrintmakerPlugin extends BasePlugin
 	 */
 	public function onAfterInstall()
 	{
-		craft()->printmaker_beta->phoneHome();
+		craft()->printmaker_updates->phoneHome();
 	}
 
 	/**

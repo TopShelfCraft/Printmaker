@@ -14,7 +14,7 @@ use Dompdf\Dompdf;
 /**
  * Printmaker_PdfModel
  *
- * @author    Top Shelf Craft <michael@michaelrog.com>
+ * @author    Top Shelf Craft <support@topshelfcraft.com>
  * @copyright Copyright (c) 2016, Michael Rog
  * @license   http://topshelfcraft.com/license
  * @see       http://topshelfcraft.com
