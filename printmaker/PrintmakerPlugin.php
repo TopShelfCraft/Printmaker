@@ -83,7 +83,7 @@ class PrintmakerPlugin extends BasePlugin
 	}
 
 	/**
-	 * Return the plugin's db schema version
+	 * Return the plugin's Release Feed URL
 	 *
 	 * @return string
 	 */
