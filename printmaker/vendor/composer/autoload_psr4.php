@@ -6,5 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname(dirname($vendorDir));
 
 return array(
+    'iio\\libmergepdf\\' => array($vendorDir . '/iio/libmergepdf/src'),
     'Dompdf\\' => array($vendorDir . '/dompdf/dompdf/src'),
 );

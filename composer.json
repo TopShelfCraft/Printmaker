@@ -8,7 +8,8 @@
 
   "require":
   {
-    "dompdf/dompdf": "dev-master"
+    "dompdf/dompdf": "dev-master",
+    "iio/libmergepdf": "~3.0"
   }
 
 }
