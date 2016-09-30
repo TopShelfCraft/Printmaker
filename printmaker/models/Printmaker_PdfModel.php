@@ -9,6 +9,7 @@ namespace Craft;
 require_once CRAFT_PLUGINS_PATH . 'printmaker/vendor/autoload.php';
 
 use Dompdf\Dompdf;
+use Imagine\Imagick\Imagick;
 
 
 /**
@@ -426,6 +427,98 @@ class Printmaker_PdfModel extends BaseModel
 		$variables['pdfUrl'] = $fileUrl;
 
 		return craft()->email->sendEmail($email, $variables);
+
+	}
+
+
+	/**
+	 * Saves the generated PDF and generates a thumbnail image of it
+	 *
+	 * @param $width The desired width, or null to use native size
+	 * @param $height The desired height, or null to keep aspect ratio
+	 * @param format The desired image format ('jpg' or 'png')
+	 *
+	 * @throws Exception
+	 * @returns array
+	 */
+	public function image($width = null, $height = null, $format = 'jpg')
+	{
+
+		// Generate the PDF, and get its URL/path
+
+		IOHelper::ensureFolderExists($this->_cachePath);
+		$fileExtension = '.' . $this->_settings['extension'];
+		$filePath = $this->_cachePath . $this->_settings['filename'] . $fileExtension;
+		$fileUrl = $this->_cacheUrl . $this->_settings['filename'] . $fileExtension;
+
+		try {
+			IOHelper::writeToFile($filePath, $this->_dompdf->output());
+		}
+		catch (Exception $e)
+		{
+			if ($this->_devMode)
+			{
+				throw new Exception($e->getMessage());
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		// Generate the thumbnail
+
+		$im = new Imagick();
+		$im->readImage($filePath.'[0]');
+		$im->setImageFormat($format);
+
+		// Write the image file
+
+		$imagePath = $this->_cachePath . $this->_settings['filename'] . '.' . $format;
+		$imageUrl = $this->_cacheUrl . $this->_settings['filename'] . '.' . $format;
+
+		try {
+			IOHelper::writeToFile($imagePath, $im);
+		}
+		catch (Exception $e)
+		{
+			if ($this->_devMode)
+			{
+				throw new Exception($e->getMessage());
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		$image = new Image();
+		$image->loadImage($imagePath);
+
+		$imageWidth = $image->getWidth();
+		$imageHeight = $image->getHeight();
+
+		if ($width)
+		{
+
+			$image->scaleAndCrop($width, $height);
+
+			$imageWidth = $image->getWidth();
+			$imageHeight = $image->getHeight();
+
+			$imagePath = $this->_cachePath . $this->_settings['filename'] . "-{$imageWidth}x{$imageHeight}". '.' . $format;
+			$imageUrl = $this->_cacheUrl . $this->_settings['filename'] . "-{$imageWidth}x{$imageHeight}". '.' . $format;
+
+			$image->saveAs($imagePath);
+
+		}
+
+		return array(
+			'url' => $imageUrl,
+			'path' => $imagePath,
+			'width' => $imageWidth,
+			'height' => $imageHeight,
+		);
 
 	}
 
