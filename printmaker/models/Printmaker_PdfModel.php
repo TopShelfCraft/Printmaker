@@ -1,16 +1,6 @@
 <?php
 namespace Craft;
 
-/**
- * ==============================================
- * DOMPDF library, etc.
- * @see http://dompdf.github.io/
- */
-require_once CRAFT_PLUGINS_PATH . 'printmaker/vendor/autoload.php';
-
-use Dompdf\Dompdf;
-use Imagine\Imagick\Imagick;
-
 
 /**
  * Printmaker_PdfModel
@@ -27,142 +17,41 @@ class Printmaker_PdfModel extends BaseModel
 
 	// ----------- PROPERTIES -----------
 
-	private $_dompdf;
-
-	private $_configurableSettings = array(
-
-		// Printmaker settings
-
-		'size',
-		'orientation',
-
-		'defaultOrientation',
-		'compress',
-		'filename',
-		'extension',
-		'cachePath',
-		'cacheUrl',
-		'cacheDirectory',
-		'encrypt',
-		'userPass',
-		'ownerPass',
-		'canPrint',
-		'canModify',
-		'canCopy',
-		'canAdd',
-		'devMode',
-
-		// DOMPDF system settings
-
-		'tempDir',
-		'fontDir',
-		'fontCache',
-		'logOutputFile',
-
-		// DOMPDF rendering defaults
-
-		'defaultMediaType',
-		'defaultPaperSize',
-		'defaultFont',
-		'dpi',
-		'fontHeightRatio',
-
-		// DOMPDF parsing defaults
-
-		'isPhpEnabled',
-		'isRemoteEnabled',
-		'isJavascriptEnabled',
-		'isHtml5ParserEnabled',
-		'isFontSubsettingEnabled',
-
-		// DOMPDF debugging defaults
-
-		'debugPng',
-		'debugKeepTemp',
-		'debugCss',
-		'debugLayout',
-		'debugLayoutLines',
-		'debugLayoutBlocks',
-		'debugLayoutInline',
-		'debugLayoutPaddingBox',
-
-	);
-
-	private $_defaultSettings = array();
-	private $_settings = array();
-
 	private $_devMode = false;
-	private $_cachePath;
-	private $_cacheUrl;
+
+	private $_url;
+	private $_path;
+	private $_hash;
 
 
-	// ----------- CRAFT DEFAULT MODEL METHODS -----------
+	// ----------- CRAFT MODEL METHODS -----------
 
-	function __construct($html = '', $settings = array()) {
+	function __construct($props) {
 
 		// Construct the Model
 
 		parent::__construct();
 
-		// Assemble default settings from config
-
-		foreach ( $this->_configurableSettings as $k)
-		{
-			$v = craft()->config->get($k, 'printmaker');
-			if (isset($v))
-			{
-				$this->_defaultSettings[$k] = $v;
-			}
-		}
-
-		// Assemble instance settings from defaults, merging in any overrides
-
-		if (is_array($settings))
-		{
-			$this->_settings = array_merge($this->_defaultSettings, $settings);
-		}
-		else
-		{
-			$this->_settings = $this->_defaultSettings;
-		}
-
 		// See if we're in devMode...
 
-		$this->_devMode = craft()->config->get('devMode') || (!empty($this->_settings['devMode']));
-
-		// Set up the full cachePath and cacheUrl if they're not defined already (i.e. if only the cacheDirectory is defined)
-
-		$cacheDirectory = trim($this->_settings['cacheDirectory'], '/') . '/';
-
-		if (isset($this->_settings['cachePath']))
+		if ( craft()->config->get('devMode') || (isset($this->_settings['devMode']) && $this->_settings['devMode']) )
 		{
-			$this->_cachePath = trim($this->_settings['cachePath'], '/') . '/';
-		}
-		else
-		{
-			$this->_cachePath = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . '/' . $cacheDirectory;
+			$this->_devMode = true;
 		}
 
-		if (isset($this->_settings['cacheUrl']))
-		{
-			$this->_cacheUrl = trim($this->_settings['cacheUrl'], '/') . '/';
-		}
-		else
-		{
-			$this->_cacheUrl = rtrim(UrlHelper::getSiteUrl(), '/') . '/' . $cacheDirectory;
-		}
+		// Set any props we're given
 
-		// Generate the PDF
+		if (isset($props['path'])) $this->_path = $props['path'];
+		if (isset($props['url'])) $this->_url = $props['url'];
+		if (isset($props['hash'])) $this->_hash = $props['hash'];
 
-		$this->_dompdf = $this->generatePdf($html, $this->_settings);
+		// TODO: Validate that we do have a file on disk.
 
 	}
 
 
-	// ----------- CRAFT DEFAULT MODEL METHODS -----------
-
 	/**
-	 * Return the URL of the forged image, or the URL of the first in the list of forged images
+	 * ... TODO
 	 *
 	 * @return string
 	 */
@@ -170,6 +59,7 @@ class Printmaker_PdfModel extends BaseModel
 	{
 		return '';
 	}
+
 
 	/**
 	 * @access protected
@@ -180,181 +70,99 @@ class Printmaker_PdfModel extends BaseModel
 		return array();
 	}
 
-	/**
-	 * @return array
-	 */
-	public function behaviors()
-	{
-		return array();
-	}
 
-
-	// ----------- PDF GENERATION ----------
-
-	/**
-	 * Generates a new PrintmakerPdfModel
-	 *
-	 * @param string $html
-	 * @param array $settings
-	 *
-	 * @throws Exception
-	 * @return DOMPDF|false
-	 */
-	public function generatePdf($html = '', $settings = array()) {
-
-		try {
-
-			$dompdf = new Dompdf($settings);
-			$dompdf->loadHtml($html);
-
-			$size = !empty($settings['size']) ? $settings['size'] : $settings['defaultPaperSize'];
-			$orientation = !empty($settings['orientation']) ? $settings['orientation'] : $settings['defaultOrientation'];
-			$dompdf->setPaper($size, $orientation);
-
-			$dompdf->render();
-
-			if($settings['encrypt']) {
-
-				$permissions = array();
-
-				if($settings['canPrint'])
-					$permissions[] = 'print';
-
-				if($settings['canModify'])
-					$permissions[] = 'modify';
-
-				if($settings['canCopy'])
-					$permissions[] = 'copy';
-
-				if($settings['canAdd'])
-					$permissions[] = 'add';
-
-				$dompdf->getCanvas()->get_cpdf()->setEncryption($settings['userPass'], $settings['ownerPass'], $permissions);
-
-			}
-
-			return $dompdf;
-
-		} catch (Exception $e) {
-			if ($this->_devMode)
-			{
-				throw new Exception($e->getMessage());
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-	}
+	// ----------- OUTPUT METHODS ----------
 
 
 	/**
-	 * Streams the generated PDF to the browser as output
-	 *
-	 * @throws Exception
-	 * @returns void|false
+	 * Downloads the merged PDF to the browser as a download
 	 */
-	public function output()
+	public function download($filename = null)
 	{
 
-		try
+		HeaderHelper::setContentTypeByExtension('pdf');
+		if (isset($filename))
 		{
-
-			$options = array(
-				'Attachment' => false,
-				'compress' => $this->_settings['compress']
-			);
-
-			$this->_dompdf->stream($this->_settings['filename'], $options);
-			exit;
-
+			HeaderHelper::setDownload($filename);
 		}
-		catch (Exception $e)
+		else
 		{
-			if ($this->_devMode)
-			{
-				throw new Exception($e->getMessage());
-			}
-			else
-			{
-				return false;
-			}
+			HeaderHelper::setDownload($this->getFilename());
 		}
+
+		readfile($this->getPath());
+		craft()->end();
 
 	}
 
 
 	/**
-	 * Streams the generated PDF to the browser as an attachment for download
-	 *
-	 * @throws Exception
-	 * @returns void|false
+	 * Streams the merged PDF to the browser
 	 */
-	public function download()
+	public function stream()
+	{
+		HeaderHelper::setContentTypeByExtension('pdf');
+		readfile($this->getPath());
+		craft()->end();
+	}
+
+
+	/**
+	 * ... TODO
+	 *
+	 * @return string The full path to the PDF file
+	 */
+	public function getPath()
+	{
+		return $this->_path;
+	}
+
+
+	/**
+	 * ... TODO
+	 *
+	 * @return string The URL of the PDF file
+	 */
+	public function getUrl()
+	{
+		return $this->_url;
+	}
+
+
+	/**
+	 * Returns the full filename with extension
+	 *
+	 * @param bool $includeExtension
+	 *
+	 * @return string
+	 */
+	public function getFilename($includeExtension = true)
 	{
 
-		try {
+		$parts = pathinfo($this->getPath());
 
-			$options = array(
-				'Attachment' => true,
-				'compress' => $this->_settings['compress']
-			);
-
-			$this->_dompdf->stream($this->_settings['filename'], $options);
-			exit;
-
-		}
-		catch (Exception $e)
+		if ($includeExtension)
 		{
-			if ($this->_devMode)
+			if (isset($parts['basename']))
 			{
-				throw new Exception($e->getMessage());
-			}
-			else
-			{
-				return false;
+				return $parts['basename'];
 			}
 		}
+		else
+		{
+			if (isset($parts['filename']))
+			{
+				return $parts['filename'];
+			}
+		}
+
+		return null;
 
 	}
 
 
 	/**
-	 * Saves the generated PDF to the cache directory and returns the new file's URL
-	 *
-	 * @throws Exception
-	 * @returns void|false
-	 */
-	public function url()
-	{
-
-		IOHelper::ensureFolderExists($this->_cachePath);
-		$fileExtension = '.' . $this->_settings['extension'];
-		$filePath = $this->_cachePath . $this->_settings['filename'] . $fileExtension;
-		$fileUrl = $this->_cacheUrl . $this->_settings['filename'] . $fileExtension;
-
-		try {
-			IOHelper::writeToFile($filePath, $this->_dompdf->output());
-			return $fileUrl;
-		}
-		catch (Exception $e)
-		{
-			if ($this->_devMode)
-			{
-				throw new Exception($e->getMessage());
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-	}
-
-
-	/**
-	 * Saves the generated PDF to the cache directory and returns the new file's URL
+	 * ... TODO
 	 *
 	 * @param $filename string Overrides the name of the file as it is attached to the email
 	 * @param $attributes array Attributes to set on the EmailModel
@@ -363,30 +171,8 @@ class Printmaker_PdfModel extends BaseModel
 	 * @throws Exception
 	 * @returns void|false
 	 */
-	public function email($filename = '', $attributes = array(), $variables = array())
+	public function email($filename = null, $attributes = array(), $variables = array())
 	{
-
-		// Generate the PDF, and get its URL/path
-
-		IOHelper::ensureFolderExists($this->_cachePath);
-		$fileExtension = '.' . $this->_settings['extension'];
-		$filePath = $this->_cachePath . $this->_settings['filename'] . $fileExtension;
-		$fileUrl = $this->_cacheUrl . $this->_settings['filename'] . $fileExtension;
-
-		try {
-			IOHelper::writeToFile($filePath, $this->_dompdf->output());
-		}
-		catch (Exception $e)
-		{
-			if ($this->_devMode)
-			{
-				throw new Exception($e->getMessage());
-			}
-			else
-			{
-				return false;
-			}
-		}
 
 		// Set up email
 
@@ -411,12 +197,12 @@ class Printmaker_PdfModel extends BaseModel
 			$email->body = "";
 		}
 
-		if (!is_string($filename) || empty($filename))
+		if (empty($filename) || !is_string($filename))
 		{
-			$filename = $this->_settings['filename'];
+			$filename = $this->getFilename();
 		}
 
-		$email->addAttachment($filePath, $filename, 'base64', 'application/pdf');
+		$email->addAttachment($this->getPath(), $filename, 'base64', 'application/pdf');
 
 		// Render and send email
 
@@ -424,7 +210,7 @@ class Printmaker_PdfModel extends BaseModel
 		{
 			$variables = array();
 		}
-		$variables['pdfUrl'] = $fileUrl;
+		$variables['pdfUrl'] = $this->getUrl();
 
 		return craft()->email->sendEmail($email, $variables);
 
@@ -432,65 +218,85 @@ class Printmaker_PdfModel extends BaseModel
 
 
 	/**
-	 * Saves the generated PDF and generates a thumbnail image of it
+	 * ... TODO
 	 *
-	 * @param $width The desired width, or null to use native size
-	 * @param $height The desired height, or null to keep aspect ratio
-	 * @param format The desired image format ('jpg' or 'png')
+	 * @param $transform The desired width, the handle of an Asset Transform, or an array of Transform properties
+	 * @param int $page The page of the PDF from which to generate the image
 	 *
 	 * @throws Exception
 	 * @returns array
 	 */
-	public function image($width = null, $height = null, $format = 'jpg')
+	public function image($transform = null, $page = 0)
 	{
 
-		// Generate the PDF, and get its URL/path
+		// Clean up the image cache paths
 
-		IOHelper::ensureFolderExists($this->_cachePath);
-		$fileExtension = '.' . $this->_settings['extension'];
-		$filePath = $this->_cachePath . $this->_settings['filename'] . $fileExtension;
-		$fileUrl = $this->_cacheUrl . $this->_settings['filename'] . $fileExtension;
-
-		try {
-			IOHelper::writeToFile($filePath, $this->_dompdf->output());
-		}
-		catch (Exception $e)
+		if (!empty($imageCacheDirectory = craft()->config->get('imageCacheDirectory', 'printmaker')))
 		{
-			if ($this->_devMode)
+			$imageCacheDirectory = trim($imageCacheDirectory, '/') . '/';
+		}
+		else
+		{
+			$imageCacheDirectory = '';
+		}
+
+		$imageCachePath = craft()->printmaker->getImageCachePath() . '/' . $imageCacheDirectory;
+		$imageCacheUrl = craft()->printmaker->getImageCacheUrl() . '/' . $imageCacheDirectory;
+
+		// Normalize transform properties as needed
+
+		if ($transform)
+		{
+
+			if (is_numeric($transform))
 			{
-				throw new Exception($e->getMessage());
+				$width = round($transform);
+				$transform = array('width' => $width);
+				$transform = craft()->assetTransforms->normalizeTransform($transform);
 			}
 			else
 			{
-				return false;
+				$transform = craft()->assetTransforms->normalizeTransform($transform);
 			}
+
 		}
 
-		// Generate the thumbnail
+		// Detect the format
 
-		$im = new Imagick();
-		$im->readImage($filePath.'[0]');
+		if ($transform instanceof AssetTransformModel && !empty($transform->format))
+		{
+			$format = $transform->format;
+		}
+		else
+		{
+			$format = craft()->config->get('imageFormat', 'printmaker');
+		}
+
+		// Generate the image
+
+		$im = new \Imagick();
+		$im->readImage($this->getPath().'['.$page.']');
 		$im->setImageFormat($format);
 
 		// Write the image file
 
-		$imagePath = $this->_cachePath . $this->_settings['filename'] . '.' . $format;
-		$imageUrl = $this->_cacheUrl . $this->_settings['filename'] . '.' . $format;
+		$imagePath = $imageCachePath . $this->getFilename(false) . '.' . $format;
+		$imageUrl = $imageCacheUrl . $this->getFilename(false) . '.' . $format;
 
 		try {
 			IOHelper::writeToFile($imagePath, $im);
 		}
 		catch (Exception $e)
 		{
+			PrintmakerPlugin::log($e->getMessage(), LogLevel::Error);
 			if ($this->_devMode)
 			{
 				throw new Exception($e->getMessage());
 			}
-			else
-			{
-				return false;
-			}
+			return null;
 		}
+
+		// Load up an Image object
 
 		$image = new Image();
 		$image->loadImage($imagePath);
@@ -498,20 +304,50 @@ class Printmaker_PdfModel extends BaseModel
 		$imageWidth = $image->getWidth();
 		$imageHeight = $image->getHeight();
 
-		if ($width)
+		// Transform and re-save the Image if necessary
+
+		if ($transform instanceof AssetTransformModel)
 		{
 
-			$image->scaleAndCrop($width, $height);
+			$quality = $transform->quality ? $transform->quality : craft()->config->get('defaultImageQuality');
+			if ($image instanceof Image)
+			{
+				$image->setQuality($quality);
+			}
+
+			switch ($transform->mode)
+			{
+				case 'fit':
+				{
+					$image->scaleToFit($transform->width, $transform->height);
+					break;
+				}
+
+				case 'stretch':
+				{
+					$image->resize($transform->width, $transform->height);
+					break;
+				}
+
+				default:
+				{
+					$image->scaleAndCrop($transform->width, $transform->height, true, $transform->position);
+					break;
+				}
+			}
 
 			$imageWidth = $image->getWidth();
 			$imageHeight = $image->getHeight();
 
-			$imagePath = $this->_cachePath . $this->_settings['filename'] . "-{$imageWidth}x{$imageHeight}". '.' . $format;
-			$imageUrl = $this->_cacheUrl . $this->_settings['filename'] . "-{$imageWidth}x{$imageHeight}". '.' . $format;
+			$transformName = $transform->isNamedTransform() ? $transform->name : $imageWidth . '-' . $imageHeight . '-' . $transform->position;
+			$imagePath = $imageCachePath . $this->getFilename(false) . '-' . $transformName . '.' . $format;
+			$imageUrl = $imageCacheUrl . $this->getFilename(false) . '-' . $transformName . '.' . $format;
 
 			$image->saveAs($imagePath);
 
 		}
+
+		// Return an info blob for the final image
 
 		return array(
 			'url' => $imageUrl,
@@ -523,17 +359,4 @@ class Printmaker_PdfModel extends BaseModel
 	}
 
 
-	// ----------- GETTERS / SETTERS -----------
-
-	/**
-	 * Returns the DOMPDF instance for this PdfModel
-	 *
-	 * @returns DOMPDF
-	 */
-	public function getDompdf()
-	{
-		return $this->_dompdf;
-	}
-
-
-} // Printmaker_PdfModel
+}

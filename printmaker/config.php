@@ -17,11 +17,19 @@ return array(
 
 	'defaultOrientation' => 'portrait',
 	'compress' => false,
-	'filename' => 'Printmaker',
+	'filename' => null,
 	'extension' => 'pdf',
-	'cachePath' => null,
-	'cacheUrl' => null,
-	'cacheDirectory' => 'Printmaker',
+
+	'cacheUrl' => null, // Default defined in PrintmakerService->getCacheUrl()
+	'cachePath' => null, // Default defined in PrintmakerService->getCachePath()
+	'cacheDirectory' => null,
+	'tempPath' => null, // Default defined in PrintmakerService->getTempPath()
+
+	'imageCacheUrl' => null,
+	'imageCachePath' => null, // Default defined in PrintmakerService->getImageCachePath()
+	'imageCacheDirectory' => null,
+	'imageFormat' => 'jpg',
+
 	'encrypt' => false,
 	'userPass' => '',
 	'ownerPass' => '',

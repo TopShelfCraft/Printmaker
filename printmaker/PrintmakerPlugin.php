@@ -14,6 +14,7 @@ namespace Craft;
 class PrintmakerPlugin extends BasePlugin
 {
 
+
 	/**
 	 * @return string
 	 */
@@ -69,7 +70,7 @@ class PrintmakerPlugin extends BasePlugin
 	 */
 	public function getVersion()
 	{
-		return '1.0.4';
+		return '2.a.1';
 	}
 
 	/**
@@ -101,6 +102,7 @@ class PrintmakerPlugin extends BasePlugin
 	{
 		return false;
 	}
+
 
 	/**
 	 * Make sure requirements are met before installation.
@@ -146,6 +148,44 @@ class PrintmakerPlugin extends BasePlugin
 	}
 
 	/**
+	 *
+	 */
+	public function init()
+	{
+		Craft::import('plugins.printmaker.twigextensions.*');
+	}
+
+
+	// --- HOOKS
+
+
+	/**
+	 * @return array
+	 */
+	public function registerCachePaths()
+	{
+		return [
+			craft()->printmaker->getCachePath() => Craft::t('Printmaker PDFs'),
+			craft()->printmaker->getImageCachePath() => Craft::t('Printmaker Images'),
+			craft()->printmaker->getTempPath() => Craft::t('Printmaker Temporary Files'),
+		];
+	}
+
+
+	/**
+	 * @return CachemasterTwigExtension
+	 * @throws \Exception
+	 */
+	public function addTwigExtension()
+	{
+		return new PrintmakerTwigExtension();
+	}
+
+
+	// --- UTILITIES
+
+
+	/**
 	 * @param mixed $msg
 	 * @param string $level
 	 * @param bool $force
@@ -167,5 +207,6 @@ class PrintmakerPlugin extends BasePlugin
 		parent::log($msg, $level, $force);
 
 	}
+
 
 }
