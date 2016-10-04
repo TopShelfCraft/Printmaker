@@ -106,6 +106,15 @@ class Printmaker_PdfModel extends BaseModel
 		craft()->end();
 	}
 
+	/**
+	 * Alias to stream()
+	 * @deprecated
+	 */
+	public function output()
+	{
+		$this->stream();
+	}
+
 
 	/**
 	 * ... TODO
