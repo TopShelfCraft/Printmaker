@@ -242,12 +242,18 @@ class Printmaker_PdfModel extends BaseModel
 		// Coerce the page param
 
 		$page = intval($page) - 1;
-		if (!$this->_devMode) { $page = max($page, 0); }
+		if ($page < 0 && !$this->_devMode) {
+			PrintmakerPlugin::log("Negative page indexes are not allowed. Coercing index {$page} to 0.", LogLevel::Warning);
+			$page = 0;
+		}
 
 		// Coerce the resolution param
 
 		$resolution = intval($resolution);
-		if (!$this->_devMode) { $page = max($page, 1); }
+		if ($resolution < 1 && !$this->_devMode) {
+			PrintmakerPlugin::log("Image resolution must be greater than 0. Coercing {$resolution} to 1.", LogLevel::Warning);
+			$resolution = 1;
+		}
 
 		// Clean up the image cache paths
 
@@ -309,6 +315,7 @@ class Printmaker_PdfModel extends BaseModel
 		}
 		catch (Exception $e)
 		{
+			PrintmakerPlugin::log("Error writing to path: {$imagePath}", LogLevel::Error);
 			PrintmakerPlugin::log($e->getMessage(), LogLevel::Error);
 			if ($this->_devMode)
 			{

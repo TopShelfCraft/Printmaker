@@ -274,6 +274,7 @@ class Printmaker_PdfLoader extends BaseModel
 			}
 			catch (\Exception $e)
 			{
+				PrintmakerPlugin::log("Error writing to path: {$this->_cachePath}", LogLevel::Error);
 				PrintmakerPlugin::log($e->getMessage(), LogLevel::Error);
 				if ($this->_devMode)
 				{
