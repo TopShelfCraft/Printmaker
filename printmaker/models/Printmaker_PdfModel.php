@@ -34,7 +34,7 @@ class Printmaker_PdfModel extends BaseModel
 
 		// See if we're in devMode...
 
-		if ( craft()->config->get('devMode') || (isset($this->_settings['devMode']) && $this->_settings['devMode']) )
+		if ( craft()->config->get('devMode') || (isset($props['devMode']) && $props['devMode']) )
 		{
 			$this->_devMode = true;
 		}
