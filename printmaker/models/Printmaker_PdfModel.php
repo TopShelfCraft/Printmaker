@@ -222,11 +222,12 @@ class Printmaker_PdfModel extends BaseModel
 	 *
 	 * @param $transform The desired width, the handle of an Asset Transform, or an array of Transform properties
 	 * @param int $page The page of the PDF from which to generate the image
+	 * @param int $resolution The resolution (in DPI) of the generated image
 	 *
 	 * @throws Exception
 	 * @returns array
 	 */
-	public function image($transform = null, $page = 0)
+	public function image($transform = null, $page = 0, $resolution = 72)
 	{
 
 		// Clean up the image cache paths
@@ -277,6 +278,7 @@ class Printmaker_PdfModel extends BaseModel
 		$im = new \Imagick();
 		$im->readImage($this->getPath().'['.$page.']');
 		$im->setImageFormat($format);
+		$im->setResolution($resolution, $resolution);
 
 		// Write the image file
 
@@ -339,7 +341,7 @@ class Printmaker_PdfModel extends BaseModel
 			$imageWidth = $image->getWidth();
 			$imageHeight = $image->getHeight();
 
-			$transformName = $transform->isNamedTransform() ? $transform->name : $imageWidth . '-' . $imageHeight . '-' . $transform->position;
+			$transformName = $transform->isNamedTransform() ? $transform->handle : $imageWidth . '-' . $imageHeight . '-' . $transform->position;
 			$imagePath = $imageCachePath . $this->getFilename(false) . '-' . $transformName . '.' . $format;
 			$imageUrl = $imageCacheUrl . $this->getFilename(false) . '-' . $transformName . '.' . $format;
 
