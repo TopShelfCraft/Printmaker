@@ -208,8 +208,7 @@ class Printmaker_PdfMerger extends BaseModel
 				}
 				catch (\Exception $e)
 				{
-					PrintmakerPlugin::log("Error adding file to Merger", LogLevel::Error);
-					PrintmakerPlugin::log($e->getMessage(), LogLevel::Error);
+					PrintmakerPlugin::log("Error adding file to Merger -- " . $e->getMessage(), LogLevel::Error);
 					if ($this->_devMode)
 					{
 						throw new Exception($e->getMessage());
@@ -297,8 +296,7 @@ class Printmaker_PdfMerger extends BaseModel
 			}
 			catch (\Exception $e)
 			{
-				PrintmakerPlugin::log("Error writing to path: {$this->_cachePath}", LogLevel::Error);
-				PrintmakerPlugin::log($e->getMessage(), LogLevel::Error);
+				PrintmakerPlugin::log("Error writing to path {$this->_cachePath} -- " . $e->getMessage(), LogLevel::Error);
 				if ($this->_devMode)
 				{
 					throw new Exception($e->getMessage());

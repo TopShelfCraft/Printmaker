@@ -229,8 +229,7 @@ class Printmaker_PdfMaker extends BaseModel
 
 		} catch (\Exception $e) {
 
-			PrintmakerPlugin::log("Error generating PDF", LogLevel::Error);
-			PrintmakerPlugin::log($e->getMessage(), LogLevel::Error);
+			PrintmakerPlugin::log("Error generating PDF -- " . $e->getMessage(), LogLevel::Error);
 			if ($this->_devMode)
 			{
 				throw new Exception($e->getMessage());
@@ -315,8 +314,7 @@ class Printmaker_PdfMaker extends BaseModel
 			}
 			catch (\Exception $e)
 			{
-				PrintmakerPlugin::log("Error writing to path: {$this->_cachePath}", LogLevel::Error);
-				PrintmakerPlugin::log($e->getMessage(), LogLevel::Error);
+				PrintmakerPlugin::log("Error writing to path {$this->_cachePath} -- " . $e->getMessage(), LogLevel::Error);
 				if ($this->_devMode)
 				{
 					throw new Exception($e->getMessage());

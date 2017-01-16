@@ -70,7 +70,7 @@ class PrintmakerPlugin extends BasePlugin
 	 */
 	public function getVersion()
 	{
-		return '2.a.5';
+		return '2.a.6';
 	}
 
 	/**
@@ -192,20 +192,10 @@ class PrintmakerPlugin extends BasePlugin
 	 *
 	 * @return null
 	 */
-	public static function log($msg, $level = LogLevel::Profile, $force = false)
+	public static function log($msg = '', $level = LogLevel::Info, $force = false)
 	{
-
-		if (is_string($msg))
-		{
-			$msg = "\n" . $msg . "\n\n";
-		}
-		else
-		{
-			$msg = "\n" . print_r($msg, true) . "\n\n";
-		}
-
-		parent::log($msg, $level, $force);
-
+		$msg = "\n" . print_r($msg, true) . "\n";
+		Craft::log($msg , $level, $force, 'plugin', 'printmaker');
 	}
 
 
