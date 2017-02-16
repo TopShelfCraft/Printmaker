@@ -70,7 +70,7 @@ class PrintmakerPlugin extends BasePlugin
 	 */
 	public function getVersion()
 	{
-		return '2.a.6';
+		return '2.a.7';
 	}
 
 	/**

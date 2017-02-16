@@ -1,6 +1,5 @@
 <?php
 namespace Craft;
-use Dompdf\Dompdf;
 
 
 /**
