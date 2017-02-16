@@ -10,6 +10,8 @@
 
 namespace Dompdf\Css;
 
+use Dompdf\Helpers;
+
 class Color
 {
     static $cssColorNames = array(
@@ -162,6 +164,10 @@ class Color
         "yellowgreen" => "9ACD32",
     );
 
+    /**
+     * @param $color
+     * @return array|mixed|null|string
+     */
     static function parse($color)
     {
         if (is_array($color)) {
@@ -232,8 +238,8 @@ class Color
             foreach (array_keys($triplet) as $c) {
                 $triplet[$c] = trim($triplet[$c]);
 
-                if ($triplet[$c][mb_strlen($triplet[$c]) - 1] === "%") {
-                    $triplet[$c] = round($triplet[$c] * 2.55);
+                if (Helpers::is_percent($triplet[$c])) {
+                    $triplet[$c] = round((float)$triplet[$c] * 2.55);
                 }
             }
 
@@ -268,6 +274,11 @@ class Color
         return null;
     }
 
+    /**
+     * @param $color
+     * @param float $alpha
+     * @return array
+     */
     static function getArray($color, $alpha = 1.0)
     {
         $c = array(null, null, null, null, "alpha" => $alpha, "hex" => null);
