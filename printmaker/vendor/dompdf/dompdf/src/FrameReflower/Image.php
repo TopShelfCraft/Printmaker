@@ -20,11 +20,18 @@ use Dompdf\FrameDecorator\Image as ImageFrameDecorator;
 class Image extends AbstractFrameReflower
 {
 
+    /**
+     * Image constructor.
+     * @param ImageFrameDecorator $frame
+     */
     function __construct(ImageFrameDecorator $frame)
     {
         parent::__construct($frame);
     }
 
+    /**
+     * @param BlockFrameDecorator|null $block
+     */
     function reflow(BlockFrameDecorator $block = null)
     {
         $this->_frame->position();
@@ -36,7 +43,7 @@ class Image extends AbstractFrameReflower
         //if ($frame->get_style()->float !== "none" ) {
         //  $page->add_floating_frame($this);
         //}
-        
+
         // Set the frame's width
         $this->get_min_max_width();
 
@@ -45,6 +52,9 @@ class Image extends AbstractFrameReflower
         }
     }
 
+    /**
+     * @return array
+     */
     function get_min_max_width()
     {
         if ($this->get_dompdf()->getOptions()->getDebugPng()) {
@@ -83,7 +93,7 @@ class Image extends AbstractFrameReflower
                 }
             }
             $width = ((float)rtrim($width, "%") * $t) / 100; //maybe 0
-        } elseif (!mb_strpos($width, 'pt')) {
+        } else {
             // Don't set image original size if "%" branch was 0 or size not given.
             // Otherwise aspect changed on %/auto combination for width/height
             // Resample according to px per inch
@@ -102,7 +112,7 @@ class Image extends AbstractFrameReflower
                 }
             }
             $height = ((float)rtrim($height, "%") * $t) / 100; //maybe 0
-        } elseif (!mb_strpos($height, 'pt')) {
+        } else {
             // Don't set image original size if "%" branch was 0 or size not given.
             // Otherwise aspect changed on %/auto combination for width/height
             // Resample according to px per inch
@@ -190,6 +200,5 @@ class Image extends AbstractFrameReflower
         $style->max_height = "none";
 
         return array($width, $width, "min" => $width, "max" => $width);
-
     }
 }

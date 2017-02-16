@@ -20,6 +20,9 @@ use Dompdf\Image\Cache;
 class Image extends Block
 {
 
+    /**
+     * @param Frame $frame
+     */
     function render(Frame $frame)
     {
         // Render background & borders
@@ -34,11 +37,11 @@ class Image extends Block
         $has_border_radius = $tl + $tr + $br + $bl > 0;
 
         if ($has_border_radius) {
-            $this->_canvas->clipping_roundrectangle($x, $y, $w, $h, $tl, $tr, $br, $bl);
+            $this->_canvas->clipping_roundrectangle($x, $y, (float)$w, (float)$h, $tl, $tr, $br, $bl);
         }
 
         if (($bg = $style->background_color) !== "transparent") {
-            $this->_canvas->filled_rectangle($x, $y, $w, $h, $bg);
+            $this->_canvas->filled_rectangle($x, $y, (float)$w, (float)$h, $bg);
         }
 
         if (($url = $style->background_image) && $url !== "none") {
@@ -54,11 +57,11 @@ class Image extends Block
 
         list($x, $y) = $frame->get_padding_box();
 
-        $x += $style->length_in_pt($style->padding_left, $cb["w"]);
-        $y += $style->length_in_pt($style->padding_top, $cb["h"]);
+        $x += (float)$style->length_in_pt($style->padding_left, $cb["w"]);
+        $y += (float)$style->length_in_pt($style->padding_top, $cb["h"]);
 
-        $w = $style->length_in_pt($style->width, $cb["w"]);
-        $h = $style->length_in_pt($style->height, $cb["h"]);
+        $w = (float)$style->length_in_pt($style->width, $cb["w"]);
+        $h = (float)$style->length_in_pt($style->height, $cb["h"]);
 
         if ($has_border_radius) {
             list($wt, $wr, $wb, $wl) = array(
@@ -94,9 +97,15 @@ class Image extends Block
             $font = $style->font_family;
             $size = $style->font_size;
             $spacing = $style->word_spacing;
-            $this->_canvas->text($x, $y, $alt,
-                $font, $size,
-                $style->color, $spacing);
+            $this->_canvas->text(
+                $x,
+                $y,
+                $alt,
+                $font,
+                $size,
+                $style->color,
+                $spacing
+            );
         } else {
             $this->_canvas->image($src, $x, $y, $w, $h, $style->image_resolution);
         }

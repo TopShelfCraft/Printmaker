@@ -11,6 +11,10 @@ class ComposerStaticInit0f2a489c348237e31b5a31d4b68f0b90
         array (
             'iio\\libmergepdf\\' => 16,
         ),
+        'F' => 
+        array (
+            'FontLib\\' => 8,
+        ),
         'D' => 
         array (
             'Dompdf\\' => 7,
@@ -21,6 +25,10 @@ class ComposerStaticInit0f2a489c348237e31b5a31d4b68f0b90
         'iio\\libmergepdf\\' => 
         array (
             0 => __DIR__ . '/..' . '/iio/libmergepdf/src',
+        ),
+        'FontLib\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phenx/php-font-lib/src/FontLib',
         ),
         'Dompdf\\' => 
         array (
@@ -35,12 +43,9 @@ class ComposerStaticInit0f2a489c348237e31b5a31d4b68f0b90
             array (
                 0 => __DIR__ . '/..' . '/phenx/php-svg-lib/src',
             ),
-        ),
-        'F' => 
-        array (
-            'FontLib\\' => 
+            'Sabberworm\\CSS' => 
             array (
-                0 => __DIR__ . '/..' . '/phenx/php-font-lib/src',
+                0 => __DIR__ . '/..' . '/sabberworm/php-css-parser/lib',
             ),
         ),
     );
