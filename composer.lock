@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dompdf/dompdf.git",
-                "reference": "ac40be1a7a5efbb4a905167eb4a0fcc89687c2e9"
+                "reference": "23273c79b6ed45d2564fbce6ea80f6ee2eb33200"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dompdf/dompdf/zipball/ac40be1a7a5efbb4a905167eb4a0fcc89687c2e9",
-                "reference": "ac40be1a7a5efbb4a905167eb4a0fcc89687c2e9",
+                "url": "https://api.github.com/repos/dompdf/dompdf/zipball/23273c79b6ed45d2564fbce6ea80f6ee2eb33200",
+                "reference": "23273c79b6ed45d2564fbce6ea80f6ee2eb33200",
                 "shasum": ""
             },
             "require": {
@@ -66,29 +66,30 @@
             ],
             "description": "DOMPDF is a CSS 2.1 compliant HTML to PDF converter",
             "homepage": "https://github.com/dompdf/dompdf",
-            "time": "2017-09-27T00:51:49+00:00"
+            "time": "2017-11-19T14:42:50+00:00"
         },
         {
             "name": "iio/libmergepdf",
-            "version": "3.0.0",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hanneskod/libmergepdf.git",
-                "reference": "b6042db24d66a49f3ecd261395ec918f00763e9c"
+                "reference": "2a9d6cc9a15f3cf240c7a0b2fdbd4d0ef8ef05bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hanneskod/libmergepdf/zipball/b6042db24d66a49f3ecd261395ec918f00763e9c",
-                "reference": "b6042db24d66a49f3ecd261395ec918f00763e9c",
+                "url": "https://api.github.com/repos/hanneskod/libmergepdf/zipball/2a9d6cc9a15f3cf240c7a0b2fdbd4d0ef8ef05bc",
+                "reference": "2a9d6cc9a15f3cf240c7a0b2fdbd4d0ef8ef05bc",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0",
-                "setasign/fpdi-fpdf": "^1.6"
+                "php": ">=5.6",
+                "setasign/fpdi-fpdf": "^2.0"
             },
             "require-dev": {
-                "hanneskod/readme-tester": "dev-master",
-                "symfony/finder": "2.*"
+                "hanneskod/readme-tester": "1.0-beta.1",
+                "phpunit/phpunit": "^5.0",
+                "symfony/finder": "^2.0"
             },
             "suggest": {
                 "symfony/finder": "Bulk add files using finder."
@@ -116,7 +117,7 @@
                 "merge",
                 "pdf"
             ],
-            "time": "2016-03-02T20:38:15+00:00"
+            "time": "2017-10-31T19:31:45+00:00"
         },
         {
             "name": "phenx/php-font-lib",
@@ -280,17 +281,26 @@
         },
         {
             "name": "setasign/fpdi",
-            "version": "1.6.2",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Setasign/FPDI.git",
-                "reference": "a6ad58897a6d97cc2d2cd2adaeda343b25a368ea"
+                "reference": "879dd95cd6b258ba5b062624723ef16c954f2b17"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Setasign/FPDI/zipball/a6ad58897a6d97cc2d2cd2adaeda343b25a368ea",
-                "reference": "a6ad58897a6d97cc2d2cd2adaeda343b25a368ea",
+                "url": "https://api.github.com/repos/Setasign/FPDI/zipball/879dd95cd6b258ba5b062624723ef16c954f2b17",
+                "reference": "879dd95cd6b258ba5b062624723ef16c954f2b17",
                 "shasum": ""
+            },
+            "require": {
+                "ext-zlib": "*",
+                "php": "^5.6 || ^7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~5.7",
+                "setasign/fpdf": "~1.8",
+                "tecnickcom/tcpdf": "~6.2"
             },
             "suggest": {
                 "setasign/fpdf": "FPDI will extend this class but as it is also possible to use \"tecnickcom/tcpdf\" as an alternative there's no fixed dependency configured.",
@@ -299,13 +309,9 @@
             },
             "type": "library",
             "autoload": {
-                "classmap": [
-                    "filters/",
-                    "fpdi.php",
-                    "fpdf_tpl.php",
-                    "fpdi_pdf_parser.php",
-                    "pdf_context.php"
-                ]
+                "psr-4": {
+                    "setasign\\Fpdi\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -316,6 +322,11 @@
                     "name": "Jan Slabon",
                     "email": "jan.slabon@setasign.com",
                     "homepage": "https://www.setasign.com"
+                },
+                {
+                    "name": "Maximilian Kresse",
+                    "email": "maximilian.kresse@setasign.com",
+                    "homepage": "https://www.setasign.com"
                 }
             ],
             "description": "FPDI is a collection of PHP classes facilitating developers to read pages from existing PDF documents and use them as templates in FPDF. Because it is also possible to use FPDI with TCPDF, there are no fixed dependencies defined. Please see suggestions for packages which evaluates the dependencies automatically.",
@@ -325,32 +336,27 @@
                 "fpdi",
                 "pdf"
             ],
-            "time": "2017-05-11T14:25:49+00:00"
+            "time": "2017-11-13T15:12:36+00:00"
         },
         {
             "name": "setasign/fpdi-fpdf",
-            "version": "1.6.2",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Setasign/FPDI-FPDF.git",
-                "reference": "a5dda72b78253c0e9e4d644e6e3af4b94662e27e"
+                "reference": "39d8fe065ef27816e78ceebf87719bebe6abdd73"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Setasign/FPDI-FPDF/zipball/a5dda72b78253c0e9e4d644e6e3af4b94662e27e",
-                "reference": "a5dda72b78253c0e9e4d644e6e3af4b94662e27e",
+                "url": "https://api.github.com/repos/Setasign/FPDI-FPDF/zipball/39d8fe065ef27816e78ceebf87719bebe6abdd73",
+                "reference": "39d8fe065ef27816e78ceebf87719bebe6abdd73",
                 "shasum": ""
             },
             "require": {
-                "setasign/fpdf": "1.8.1",
-                "setasign/fpdi": "1.6.2"
+                "setasign/fpdf": "^1.8",
+                "setasign/fpdi": "^2.0"
             },
             "type": "library",
-            "autoload": {
-                "classmap": [
-                    "fpdi_bridge.php"
-                ]
-            },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
@@ -369,7 +375,7 @@
                 "fpdi",
                 "pdf"
             ],
-            "time": "2017-05-11T14:57:54+00:00"
+            "time": "2017-10-12T14:26:38+00:00"
         }
     ],
     "packages-dev": [],

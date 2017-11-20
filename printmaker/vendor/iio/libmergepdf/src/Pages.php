@@ -5,12 +5,12 @@ namespace iio\libmergepdf;
 /**
  * Parse page numbers from string
  */
-class Pages
+class Pages implements \IteratorAggregate
 {
     /**
-     * @var array Array of integer page numbers
+     * @var integer[] Added integer page numbers
      */
-    private $pages = array();
+    private $pages = [];
 
     /**
      * Constructor
@@ -74,10 +74,35 @@ class Pages
     /**
      * Get array of integer page numbers
      *
-     * @return array
+     * @return integer[]
+     *
+     * @deprecated Since version 3.1
      */
     public function getPages()
     {
+        trigger_error(
+            'Use of getPages() is deprecated as of version 3.1, see getIterator()',
+            E_USER_DEPRECATED
+        );
+
         return $this->pages;
+    }
+
+    /**
+     * Get iterator of page numbers
+     */
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->pages);
+    }
+
+    /**
+     * Check if pages has been sprcified
+     *
+     * @return boolean
+     */
+    public function hasPages()
+    {
+        return !empty($this->pages);
     }
 }
