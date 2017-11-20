@@ -69,7 +69,7 @@ class PrintmakerPlugin extends BasePlugin
 	 */
 	public function getVersion()
 	{
-		return '1.2.1';
+		return '1.3.0';
 	}
 
 	/**
@@ -101,6 +101,26 @@ class PrintmakerPlugin extends BasePlugin
 	{
 		return false;
 	}
+
+    /**
+     * @inheritdoc IPlugin::init()
+     *
+     * @return void
+     */
+    public function init()
+    {
+        Craft::import('plugins.printmaker.twigextensions.*');
+    }
+
+    /**
+     * @see https://craftcms.com/docs/plugins/hooks-reference#addTwigExtension
+     *
+     * @return PrintmakerTwigExtension
+     */
+    public function addTwigExtension()
+    {
+        return new PrintmakerTwigExtension();
+    }
 
 	/**
 	 * Make sure requirements are met before installation.
@@ -169,3 +189,5 @@ class PrintmakerPlugin extends BasePlugin
 	}
 
 }
+
+
