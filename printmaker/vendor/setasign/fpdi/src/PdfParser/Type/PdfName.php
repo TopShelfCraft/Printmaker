@@ -5,7 +5,7 @@
  * @package   setasign\Fpdi
  * @copyright Copyright (c) 2017 Setasign - Jan Slabon (https://www.setasign.com)
  * @license   http://opensource.org/licenses/mit-license The MIT License
- * @version   2.0.0
+ * @version   2.0.3
  */
 
 namespace setasign\Fpdi\PdfParser\Type;
@@ -37,6 +37,22 @@ class PdfName extends PdfType
 
         $v->value = '';
         return $v;
+    }
+
+    /**
+     * Unescapes a name string.
+     *
+     * @param string $value
+     * @return string
+     */
+    static public function unescape($value)
+    {
+        if (false === strpos($value, '#'))
+            return $value;
+
+        return preg_replace_callback('/#[a-fA-F\d]{2}/', function($matches) {
+            return chr(hexdec($matches[0]));
+        }, $value);
     }
 
     /**

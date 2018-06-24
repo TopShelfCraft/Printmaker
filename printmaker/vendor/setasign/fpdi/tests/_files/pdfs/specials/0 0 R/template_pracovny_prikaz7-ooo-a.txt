@@ -1,1 +1,0 @@
-Makes use of an indirect object reference to "0 0 R".

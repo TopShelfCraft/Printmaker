@@ -5,7 +5,7 @@
  * @package   setasign\Fpdi
  * @copyright Copyright (c) 2017 Setasign - Jan Slabon (https://www.setasign.com)
  * @license   http://opensource.org/licenses/mit-license The MIT License
- * @version   2.0.0
+ * @version   2.0.3
  */
 
 namespace setasign\Fpdi\PdfReader;
@@ -56,8 +56,10 @@ class PdfReader
      */
     public function __destruct()
     {
-        /** @noinspection PhpInternalEntityUsedInspection */
-        $this->parser->cleanUp();
+        if ($this->parser !== null) {
+            /** @noinspection PhpInternalEntityUsedInspection */
+            $this->parser->cleanUp();
+        }
     }
 
     /**

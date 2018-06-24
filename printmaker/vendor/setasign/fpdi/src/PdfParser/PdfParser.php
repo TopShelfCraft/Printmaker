@@ -5,7 +5,7 @@
  * @package   setasign\Fpdi
  * @copyright Copyright (c) 2017 Setasign - Jan Slabon (https://www.setasign.com)
  * @license   http://opensource.org/licenses/mit-license The MIT License
- * @version   2.0.0
+ * @version   2.0.3
  */
 
 namespace setasign\Fpdi\PdfParser;
@@ -178,7 +178,10 @@ class PdfParser
 
         $catalog = $this->getCatalog();
         if (isset($catalog->value['Version'])) {
-            list($major, $minor) = \explode('.', PdfType::resolve($catalog->value['Version'], $this)->value);
+            $versionParts = \explode('.', PdfName::unescape(PdfType::resolve($catalog->value['Version'], $this)->value));
+            if (count($versionParts) === 2) {
+                list($major, $minor) = $versionParts;
+            }
         }
 
         return [(int) $major, (int) $minor];
