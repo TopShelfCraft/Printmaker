@@ -3,9 +3,8 @@
  * This file is part of FPDI
  *
  * @package   setasign\Fpdi
- * @copyright Copyright (c) 2017 Setasign - Jan Slabon (https://www.setasign.com)
+ * @copyright Copyright (c) 2020 Setasign GmbH & Co. KG (https://www.setasign.com)
  * @license   http://opensource.org/licenses/mit-license The MIT License
- * @version   2.0.3
  */
 
 namespace setasign\Fpdi\PdfParser\Type;
@@ -30,6 +29,7 @@ class PdfIndirectObject extends PdfType
      * @param Tokenizer $tokenizer
      * @param StreamReader $reader
      * @return bool|self
+     * @throws PdfTypeException
      */
     public static function parse(
         $objectNumberToken,
@@ -45,7 +45,7 @@ class PdfIndirectObject extends PdfType
 
         $nextToken = $tokenizer->getNextToken();
         if ($nextToken === 'stream') {
-            $value = PdfStream::parse($value, $reader);
+            $value = PdfStream::parse($value, $reader, $parser);
         } elseif ($nextToken !== false) {
             $tokenizer->pushStack($nextToken);
         }
@@ -81,6 +81,7 @@ class PdfIndirectObject extends PdfType
      *
      * @param mixed $indirectObject
      * @return self
+     * @throws PdfTypeException
      */
     public static function ensure($indirectObject)
     {

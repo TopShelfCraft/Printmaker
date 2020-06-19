@@ -3,14 +3,14 @@
  * This file is part of FPDI
  *
  * @package   setasign\Fpdi
- * @copyright Copyright (c) 2017 Setasign - Jan Slabon (https://www.setasign.com)
+ * @copyright Copyright (c) 2020 Setasign GmbH & Co. KG (https://www.setasign.com)
  * @license   http://opensource.org/licenses/mit-license The MIT License
- * @version   2.0.3
  */
 
 namespace setasign\Fpdi;
 
 use setasign\Fpdi\PdfParser\CrossReference\CrossReferenceException;
+use setasign\Fpdi\PdfParser\PdfParserException;
 use setasign\Fpdi\PdfParser\Type\PdfIndirectObject;
 use setasign\Fpdi\PdfParser\Type\PdfNull;
 
@@ -30,13 +30,19 @@ class Fpdi extends FpdfTpl
      *
      * @string
      */
-    const VERSION = '2.0.3';
+    const VERSION = '2.3.1';
+
+    protected function _enddoc()
+    {
+        parent::_enddoc();
+        $this->cleanUp();
+    }
 
     /**
      * Draws an imported page or a template onto the page or another template.
      *
-     * Omit one of the size parameters (width, height) to calculate the other one automatically in view to the aspect
-     * ratio.
+     * Give only one of the size parameters (width, height) to calculate the other one automatically in view to the
+     * aspect ratio.
      *
      * @param mixed $tpl The template id
      * @param float|int|array $x The abscissa of upper-left corner. Alternatively you could use an assoc array
@@ -64,8 +70,8 @@ class Fpdi extends FpdfTpl
     /**
      * Get the size of an imported page or template.
      *
-     * Omit one of the size parameters (width, height) to calculate the other one automatically in view to the aspect
-     * ratio.
+     * Give only one of the size parameters (width, height) to calculate the other one automatically in view to the
+     * aspect ratio.
      *
      * @param mixed $tpl The template id
      * @param float|int|null $width The width.
@@ -75,7 +81,7 @@ class Fpdi extends FpdfTpl
     public function getTemplateSize($tpl, $width = null, $height = null)
     {
         $size = parent::getTemplateSize($tpl, $width, $height);
-        if (false === $size) {
+        if ($size === false) {
             return $this->getImportedPageSize($tpl, $width, $height);
         }
 
@@ -84,6 +90,8 @@ class Fpdi extends FpdfTpl
 
     /**
      * @inheritdoc
+     * @throws CrossReferenceException
+     * @throws PdfParserException
      */
     protected function _putimages()
     {
