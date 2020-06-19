@@ -266,6 +266,8 @@ class Printmaker_PdfModel extends BaseModel
 				'compress' => $this->_settings['compress']
 			);
 
+			ob_end_clean();
+
 			$this->_dompdf->stream($this->_settings['filename'], $options);
 			exit;
 
@@ -300,6 +302,8 @@ class Printmaker_PdfModel extends BaseModel
 				'Attachment' => true,
 				'compress' => $this->_settings['compress']
 			);
+
+			ob_end_clean();
 
 			$this->_dompdf->stream($this->_settings['filename'], $options);
 			exit;
